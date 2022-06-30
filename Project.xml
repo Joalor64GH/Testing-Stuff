@@ -122,6 +122,7 @@
        	<assets path='Launch.bat' if="windows"/>
 	<assets path='modsList.txt' rename='' />
 	<assets path='LICENSE' rename='LICENSE.txt' />
+	<assets path="ndll/" rename=''/>
 	<!-- <template path='mods' /> -->
 	
 	<!-- assets path="CHANGELOG.md" rename='changelog.txt' -->
@@ -149,6 +150,8 @@
 	<haxelib name="faxe" if='switch'/>
 	<!--<haxelib name="polymod"/> -->
 	<haxelib name="discord_rpc" if="desktop"/>
+	<haxelib name="systools" />
+	<ndll name="systools" haxelib="systools" />
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
