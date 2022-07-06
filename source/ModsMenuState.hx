@@ -18,6 +18,7 @@ import lime.utils.Assets;
 import flixel.system.FlxSound;
 import openfl.utils.Assets as OpenFlAssets;
 import sys.io.File;
+import flixel.input.keyboard.FlxKey;
 import sys.FileSystem;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -42,7 +43,6 @@ class ModsMenuState extends MusicBeatState
 	
 	var noModsTxt:Alphabet;
 	var noModsTxt2:Alphabet;
-	var noModsTxt3:Alphabet;
 	var selector:AttachedSprite;
 	var descriptionTxt:FlxText;
 	var needaReset = false;
@@ -56,6 +56,7 @@ class ModsMenuState extends MusicBeatState
 	var buttonUp:FlxButton;
 	var buttonToggle:FlxButton;
 	var buttonsArray:Array<FlxButton> = [];
+	var debugKeys:Array<FlxKey>;
 
 	var installButton:FlxButton;
 	var removeButton:FlxButton;
@@ -70,6 +71,8 @@ class ModsMenuState extends MusicBeatState
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 		WeekData.setDirectoryFromWeek();
+
+        debugKeys = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -86,26 +89,21 @@ class ModsMenuState extends MusicBeatState
 		add(bg);
 		bg.screenCenter();
 
-		noModsTxt = new Alphabet(0, 300, "NO MODS INSTALLED", true, false, 0.05, 0.66);
-		noModsTxt.screenCenter(X);
-		noModsTxt.scrollFactor.set();
-		add(noModsTxt);
-		visibleWhenNoMods.push(noModsTxt);
-		noModsTxt2 = new Alphabet(0, 360, "PRESS BACK TO EXIT AND INSTALL A MOD", true, false, 0.05, 0.66);
-		noModsTxt2.screenCenter(X);
-		noModsTxt2.scrollFactor.set();
-		add(noModsTxt2);
-		visibleWhenNoMods.push(noModsTxt2);
+		noModsTxt = new FlxText(0, 0, FlxG.width, "NO MODS INSTALLED\nPRESS BACK TO EXIT AND INSTALL A MOD\nOR PRESS 7 TO OPEN THE MOD DOWNLOADER", 48);
+		#if sys
+		noModsTxt.text = "NO MODS INSTALLED\nPRESS BACK TO EXIT AND INSTALL A MOD\nOR PRESS 7 TO OPEN THE MOD DOWNLOADER";
+		#else
+		noModsTxt.text = "NO MODS INSTALLED\nPRESS BACK TO EXIT AND INSTALL A MOD"
+		#end
 		if(FlxG.random.bool(0.1))
 		{
-			noModsTxt3 = new Alphabet(0, 420, "BITCH.", true, false, 0.05, 0.66);
-			noModsTxt3.screenCenter(X);
-			noModsTxt3.scrollFactor.set();
-			add(noModsTxt3);
-			visibleWhenNoMods.push(noModsTxt3);
+			noModsTxt2 = new Alphabet(0, 420, "BITCH.", true, false, 0.05, 0.66);
+			noModsTxt2.screenCenter(X);
+			noModsTxt2.scrollFactor.set();
+			add(noModsTxt2);
+			visibleWhenNoMods.push(noModsTxt2);
 			noModsTxt.y -= 25;
 			noModsTxt2.y -= 25;
-			noModsTxt3.y -= 25;
 		}
 
 		var path:String = 'modsList.txt';
@@ -455,9 +453,14 @@ class ModsMenuState extends MusicBeatState
 			noModsSine += 180 * elapsed;
 			noModsTxt.alpha = 1 - Math.sin((Math.PI * noModsSine) / 180);
 			noModsTxt2.alpha = 1 - Math.sin((Math.PI * noModsSine) / 180);
-			if(noModsTxt3 != null)
-				noModsTxt3.alpha = 1 - Math.sin((Math.PI * noModsSine) / 180);
 		}
+
+        #if sys
+		if (FlxG.keys.anyJustPressed(debugKeys))
+		{
+			MusicBeatState.switchState(new ModDownloadState());
+		}
+		#end
 
 		if(canExit && controls.BACK)
 		{
